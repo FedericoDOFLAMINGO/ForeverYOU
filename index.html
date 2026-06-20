@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Angy 🐧❄️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Nunito:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --navy: #071223;
+  --deep: #0c1e3a;
+  --ice: #a8d8f0;
+  --frost: #d4eeff;
+  --gold: #e8c97a;
+  --rose: #f08cb0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  min-height: 100vh;
+  background: var(--navy);
+  font-family: 'Nunito', sans-serif;
+  color: var(--frost);
+  overflow-x: hidden;
+}
+
+/* ── PANTALLA BIENVENIDA ── */
+#welcome-screen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #0d2240 0%, #071223 100%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  text-align: center;
+  padding: 30px;
+  transition: opacity 0.8s ease;
+}
+
+#welcome-screen.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome-penguins {
+  font-size: 3.5rem;
+  animation: bob 1.8s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+.welcome-title {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(2rem, 7vw, 3rem);
+  color: var(--frost);
+  text-shadow: 0 0 40px rgba(168,216,240,0.6);
+}
+
+.welcome-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--ice);
+  opacity: 0.8;
+  max-width: 340px;
+  line-height: 1.6;
+}
+
+.welcome-btn {
+  margin-top: 10px;
+  padding: 16px 44px;
+  background: linear-gradient(135deg, #1e5fa8, #38b6ff);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 30px rgba(56,182,255,0.45);
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+}
+.welcome-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(56,182,255,0.6); }
+.welcome-btn:active { transform: translateY(0); }
+
+.welcome-note {
+  font-size: 0.75rem;
+  color: var(--ice);
+  opacity: 0.4;
+  letter-spacing: 1px;
+}
+
+/* ── MUSIC PLAYER ── */
+#music-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(12,30,58,0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(168,216,240,0.2);
+  border-radius: 50px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  min-width: 240px;
+}
+
+#music-bar .song-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+#music-bar .song-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--frost);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+#music-bar .song-sub {
+  font-size: 0.7rem;
+  color: var(--ice);
+  opacity: 0.5;
+}
+
+#play-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#1e5fa8,#38b6ff);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(56,182,255,0.4);
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+#play-btn:hover { transform: scale(1.12); }
+
+.music-note {
+  font-size: 1.1rem;
+  animation: noteBounce 1.4s ease-in-out infinite;
+}
+@keyframes noteBounce {
+  0%,100% { transform: translateY(0) rotate(-10deg); opacity:0.7; }
+  50%      { transform: translateY(-4px) rotate(10deg); opacity:1; }
+}
+
+/* ── CANVAS ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── PAGE ── */
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 18px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 60px 0 20px;
+}
+.hero-eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--ice);
+  opacity: 0.6;
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(2.6rem, 9vw, 4rem);
+  color: var(--frost);
+  text-shadow: 0 0 40px rgba(168,216,240,0.55), 0 2px 0 rgba(0,0,0,0.4);
+  animation: titleglow 3s ease-in-out infinite alternate;
+}
+@keyframes titleglow {
+  from { text-shadow: 0 0 20px rgba(168,216,240,0.4), 0 2px 0 rgba(0,0,0,0.4); }
+  to   { text-shadow: 0 0 55px rgba(168,216,240,0.85), 0 2px 0 rgba(0,0,0,0.4); }
+}
+.hero-sub {
+  margin-top: 14px;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ice);
+  opacity: 0.7;
+  letter-spacing: 1px;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0.3;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ice), transparent);
+}
+.divider span { font-size: 1rem; white-space: nowrap; }
+
+/* ── FOTO MARCO ── */
+.photo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.photo-frame-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+}
+
+/* Marco exterior con brillo */
+.photo-frame-outer {
+  padding: 4px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #a8d8f0, #e8c97a, #f08cb0, #a8d8f0);
+  background-size: 300% 300%;
+  animation: gradientShift 4s ease infinite;
+  box-shadow: 0 0 40px rgba(168,216,240,0.3), 0 12px 50px rgba(0,0,0,0.5);
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.photo-frame-inner {
+  border-radius: 21px;
+  overflow: hidden;
+  background: var(--deep);
+  position: relative;
+}
+
+.photo-frame-inner img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 4/5;
+  filter: brightness(0.95) saturate(1.1);
+  transition: transform 0.4s ease;
+}
+.photo-frame-inner:hover img { transform: scale(1.03); }
+
+/* Overlay sutil */
+.photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(7,18,35,0.5) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Esquinas decorativas */
+.corner {
+  position: absolute;
+  width: 28px; height: 28px;
+  border-color: rgba(255,255,255,0.5);
+  border-style: solid;
+  z-index: 2;
+}
+.corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
+.corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
+.corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
+.corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
+
+.photo-caption {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ice);
+  opacity: 0.7;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* ── CARTA ── */
+.letter {
+  background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(168,216,240,0.04) 100%);
+  border: 1px solid rgba(168,216,240,0.18);
+  border-radius: 28px;
+  padding: 40px 36px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 12px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+.letter::before {
+  content: '🐧';
+  position: absolute;
+  top: -10px; right: 20px;
+  font-size: 5rem;
+  opacity: 0.05;
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+.letter-date {
+  font-size: 0.76rem;
+  color: var(--ice);
+  opacity: 0.45;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.letter-saludo {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.55rem;
+  color: var(--ice);
+  margin-bottom: 24px;
+}
+.letter p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.18rem;
+  line-height: 2;
+  color: #cde8ff;
+  margin-bottom: 20px;
+  text-align: justify;
+}
+.letter p em { font-style: italic; color: var(--frost); }
+.letter p strong { font-weight: 600; color: var(--gold); }
+
+.highlight-block {
+  background: rgba(168,216,240,0.07);
+  border-left: 3px solid var(--ice);
+  border-radius: 0 12px 12px 0;
+  padding: 16px 20px;
+  margin: 24px 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--frost);
+  line-height: 1.7;
+}
+
+.letter-penguins {
+  text-align: center;
+  font-size: 2rem;
+  letter-spacing: 8px;
+  margin: 28px 0 20px;
+  animation: waddle 2s ease-in-out infinite;
+}
+@keyframes waddle {
+  0%,100% { letter-spacing: 8px; }
+  50%      { letter-spacing: 16px; }
+}
+
+.letter-firma {
+  margin-top: 32px;
+  text-align: right;
+}
+.letter-firma .name {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.8rem;
+  color: var(--ice);
+}
+.letter-firma .forever {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ice);
+  opacity: 0.55;
+  margin-top: 4px;
+}
+
+/* ── HEART REVEAL ── */
+.heart-reveal-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(168,216,240,0.03));
+  border: 1px solid rgba(168,216,240,0.15);
+  border-radius: 24px;
+  padding: 30px 24px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+.heart-reveal-card h2 {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.3rem;
+  color: var(--ice);
+  margin-bottom: 6px;
+}
+.heart-reveal-card .desc {
+  font-size: 0.85rem;
+  color: var(--ice);
+  opacity: 0.6;
+  margin-bottom: 20px;
+}
+.heart-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.heart-tile {
+  aspect-ratio: 1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(168,216,240,0.2);
+  border-radius: 12px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background 0.3s;
+  user-select: none;
+}
+.heart-tile:hover { transform: scale(1.1); background: rgba(168,216,240,0.12); }
+.heart-tile.flipped { background: rgba(240,140,176,0.2); border-color: var(--rose); cursor:default; transform: scale(1.05); font-size:0.9rem; font-family:'Nunito',sans-serif; font-weight:700; color:var(--frost); }
+#reveal-msg {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--frost);
+  min-height: 32px;
+  font-style: italic;
+}
+
+/* ── JUEGO ── */
+.game-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(168,216,240,0.03));
+  border: 1px solid rgba(168,216,240,0.15);
+  border-radius: 24px;
+  padding: 28px 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  text-align: center;
+}
+.game-card h2 { font-family:'Pacifico',cursive; font-size:1.3rem; color:var(--ice); margin-bottom:6px; }
+.game-card .desc { font-size:0.85rem; color:var(--ice); opacity:0.6; margin-bottom:16px; }
+#game-area {
+  position: relative;
+  width: 100%; height: 240px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(168,216,240,0.1);
+  cursor: crosshair;
+}
+.falling-item {
+  position: absolute;
+  font-size: 1.8rem;
+  user-select: none;
+  cursor: pointer;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  from { transform: translateY(-50px); }
+  to   { transform: translateY(280px); }
+}
+.game-stats { display:flex; justify-content:center; gap:30px; margin-top:14px; }
+.stat { font-size:0.9rem; color:var(--ice); opacity:0.8; }
+.stat span { font-size:1.3rem; font-weight:800; color:var(--rose); }
+
+/* ── QUIZ ── */
+.quiz-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(168,216,240,0.03));
+  border: 1px solid rgba(168,216,240,0.15);
+  border-radius: 24px;
+  padding: 28px 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  text-align: center;
+}
+.quiz-card h2 { font-family:'Pacifico',cursive; font-size:1.3rem; color:var(--ice); margin-bottom:6px; }
+.quiz-card .desc { font-size:0.85rem; color:var(--ice); opacity:0.6; margin-bottom:20px; }
+.quiz-bar-wrap { width:100%; height:4px; background:rgba(168,216,240,0.1); border-radius:4px; margin-bottom:16px; overflow:hidden; }
+.quiz-bar { height:100%; background:linear-gradient(90deg,var(--ice),var(--rose)); border-radius:4px; transition:width 0.4s ease; width:0%; }
+#quiz-question {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem;
+  color:var(--frost);
+  margin-bottom:18px;
+  min-height:54px;
+  line-height:1.6;
+}
+.quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.quiz-opt {
+  padding:10px 10px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(168,216,240,0.2);
+  border-radius:12px;
+  color:var(--frost);
+  cursor:pointer;
+  font-family:'Nunito',sans-serif;
+  font-size:0.82rem;
+  transition:all 0.2s;
+  line-height:1.35;
+  text-align:center;
+  word-break:break-word;
+  hyphens:auto;
+}
+.quiz-opt:hover { background:rgba(168,216,240,0.14); border-color:var(--ice); transform:translateY(-1px); }
+.quiz-opt.correct { background:rgba(80,220,120,0.2); border-color:#50dc78; color:#50dc78; }
+.quiz-opt.wrong   { background:rgba(240,100,100,0.18); border-color:#f06464; color:#f06464; }
+.quiz-opt.long-opt { grid-column:span 2; font-size:0.72rem; }
+#quiz-feedback { font-size:0.95rem; color:var(--ice); font-weight:700; min-height:24px; }
+#quiz-progress { font-size:0.78rem; color:var(--ice); opacity:0.5; margin-top:6px; }
+
+/* ── BTN ── */
+.btn {
+  display:inline-block;
+  margin-top:14px;
+  padding:12px 32px;
+  background:linear-gradient(135deg,#1e5fa8,#38b6ff);
+  color:#fff;
+  border:none;
+  border-radius:50px;
+  font-family:'Nunito',sans-serif;
+  font-size:1rem;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform 0.2s,box-shadow 0.2s;
+  box-shadow:0 4px 20px rgba(56,182,255,0.35);
+}
+.btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(56,182,255,0.5); }
+.btn:active { transform:translateY(0); }
+
+/* ── TIENDA ── */
+.shop-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(168,216,240,0.03));
+  border: 1px solid rgba(168,216,240,0.15);
+  border-radius: 24px;
+  padding: 28px 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  text-align: center;
+}
+.shop-card h2 { font-family:'Pacifico',cursive; font-size:1.3rem; color:var(--gold); margin-bottom:6px; }
+.shop-card .desc { font-size:0.85rem; color:var(--ice); opacity:0.6; margin-bottom:16px; }
+
+.shop-points-display {
+  font-size:1.1rem;
+  font-weight:800;
+  color:var(--frost);
+  background: rgba(168,216,240,0.08);
+  border: 1px solid rgba(168,216,240,0.2);
+  border-radius: 50px;
+  padding: 10px 24px;
+  display: inline-block;
+  margin-bottom: 22px;
+}
+.shop-points-display span { color:var(--gold); font-size:1.4rem; }
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media(max-width:480px){ .shop-grid { grid-template-columns: repeat(2,1fr); } }
+
+.shop-item {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(168,216,240,0.15);
+  border-radius: 16px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.shop-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+.shop-item.shop-premium {
+  border-color: rgba(232,201,122,0.35);
+  background: rgba(232,201,122,0.06);
+  grid-column: span 1;
+}
+.shop-item.shop-ultra {
+  border-color: rgba(240,140,176,0.4);
+  background: rgba(240,140,176,0.07);
+  grid-column: span 1;
+}
+
+.shop-emoji { font-size: 2rem; }
+.shop-name { font-size: 0.82rem; font-weight: 700; color: var(--frost); }
+.shop-cost { font-size: 0.75rem; color: var(--ice); opacity: 0.6; }
+
+.shop-btn {
+  margin-top: 6px;
+  padding: 7px 16px;
+  background: linear-gradient(135deg,#1e5fa8,#38b6ff);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Nunito',sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 3px 10px rgba(56,182,255,0.3);
+}
+.shop-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(56,182,255,0.5); }
+.shop-btn:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); cursor:not-allowed; box-shadow:none; transform:none; }
+.shop-item.shop-premium .shop-btn { background: linear-gradient(135deg,#b8860b,#e8c97a); }
+.shop-item.shop-ultra .shop-btn { background: linear-gradient(135deg,#8b3a5a,#f08cb0); }
+
+#shop-msg {
+  margin-top: 12px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--gold);
+  min-height: 28px;
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align:center;
+  padding:10px 0 20px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;
+  color:var(--ice);
+  opacity:0.3;
+  font-style:italic;
+}
+
+/* ── POPUP ── */
+.popup-float {
+  position:fixed;
+  pointer-events:none;
+  font-size:1.6rem;
+  z-index:9998;
+  animation:floatUp 1.1s ease forwards;
+}
+@keyframes floatUp {
+  0%   { opacity:1; transform:translateY(0) scale(1); }
+  100% { opacity:0; transform:translateY(-100px) scale(0.4); }
+}
+</style>
+</head>
+<body>
+
+<!-- AUDIO -->
+<audio id="bg-music" loop src="mylove.mp3"></audio>
+
+<!-- PANTALLA BIENVENIDA -->
+<div id="welcome-screen">
+  <div class="welcome-penguins">🐧❄️🐧</div>
+  <div class="welcome-title">Para Angy</div>
+  <div class="welcome-sub">Hay algo especial esperándote aquí.<br>¿Lista para abrirlo? 💙</div>
+  <button class="welcome-btn" onclick="enterPage()">💙 Abrir carta</button>
+  <div class="welcome-note">🎵 con música incluida</div>
+</div>
+
+<!-- CANVAS FONDO -->
+<canvas id="bg-canvas"></canvas>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="hero-eyebrow">❄️ una cartita especial ❄️</p>
+    <h1>Para Angy</h1>
+    <p class="hero-sub">de Fer, con todo lo que tengo 🐧</p>
+  </div>
+
+  <div class="divider"><span>🐧 ❄️ 🐧</span></div>
+
+  <!-- FOTO -->
+  <div class="photo-section">
+    <div class="photo-frame-wrap">
+      <div class="photo-frame-outer">
+        <div class="photo-frame-inner">
+          <img src="AFLOVE.jpg" alt="Nosotros 💙" onerror="this.style.minHeight='320px';this.style.background='rgba(168,216,240,0.05)';this.alt='📷 coloca aquí tu foto AFLOVE.jpg'">
+          <div class="photo-overlay"></div>
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+        </div>
+      </div>
+    </div>
+    <p class="photo-caption">nosotros ✨ el momento favorito</p>
+  </div>
+
+  <div class="divider"><span>💙 ✨ 💙</span></div>
+
+  <!-- CARTA -->
+  <div class="letter">
+    <div class="letter-date">Junio · 2026</div>
+    <div class="letter-saludo">Hola, mi amor 💙</div>
+
+    <p>
+      Hay cosas que uno no sabe cómo decir, no porque no las sienta,
+      sino porque las palabras siempre se quedan cortas cuando el sentimiento es demasiado grande.
+      Pero hoy quise intentarlo de todas formas, porque <em>tú te mereces que lo intente.</em>
+    </p>
+
+    <p>
+      Desde que estás en mi vida, las cosas tienen otro sabor. No es que antes todo estuviera mal,
+      es que ahora todo brilla diferente. Como cuando amanece en invierno y el sol pega en la nieve,
+      y aunque hace frío, hay algo tan bonito que no puedes evitar sonreír.
+      <strong>Así me sientes a mí.</strong>
+    </p>
+
+    <div class="highlight-block">
+      "Eres la persona con la que quiero compartir los días normales, los días raros,
+      los días de no hacer nada y los días de todo."
+    </div>
+
+    <p>
+      Me gusta cómo me escuchas cuando hablo de cosas sin importancia, como si fueran las más
+      importantes del mundo. Me gusta que puedo ser yo mismo contigo, sin pretender ni fingir.
+      Me gusta que a veces nos reímos de cosas tontas y el tiempo se va sin que nos demos cuenta.
+      <em>Me gustas tú, en todas tus versiones.</em>
+    </p>
+
+    <p>
+      Sé que no siempre soy perfecto. A veces me falta palabras en el momento exacto,
+      a veces me distraigo, a veces no digo todo lo que pienso. Pero lo que sí es cierto,
+      lo que nunca va a cambiar, es que <strong>cada día que pasa, te quiero más.</strong>
+      No de manera dramática ni exagerada, sino de esa manera tranquila que se siente real,
+      que se queda, que no necesita demostrarse gritando.
+    </p>
+
+    <p>
+      Quiero que sepas que cuando pienso en momentos bonitos del futuro,
+      siempre apareces tú. En la imagen más simple y en la más grande.
+      Eso me parece algo muy especial, y no lo quiero guardar solo para mí.
+    </p>
+
+    <div class="highlight-block">
+      Gracias por quedarte. Gracias por elegirme.
+      Gracias por ser exactamente quien eres.
+    </div>
+
+    <p>
+      Esta cartita no tiene fin perfecto porque lo que siento tampoco lo tiene.
+      Solo sé que hoy, mañana y todos los días que vengan,
+      <strong>te voy a querer muchísimo.</strong>
+    </p>
+
+    <div class="letter-penguins">🐧🐧</div>
+
+    <div class="letter-firma">
+      <div class="name">— Fer 💙</div>
+      <div class="forever">para siempre, o más</div>
+    </div>
+  </div>
+
+  <div class="divider"><span>💙 ✨ 💙</span></div>
+
+  <!-- HEART REVEAL -->
+  <div class="heart-reveal-card">
+    <h2>💌 Descubre el mensaje</h2>
+    <p class="desc">Toca cada corazón para revelar las palabras escondidas 🐧</p>
+    <div class="heart-grid" id="heart-grid"></div>
+    <div id="reveal-msg"></div>
+  </div>
+
+  <!-- JUEGO -->
+  <div class="game-card">
+    <h2>🎮 Atrapa mi amor</h2>
+    <p class="desc">Toca los corazones y pingüinos 🐧💙 — evita las tormentas ⛈️</p>
+    <div id="game-area">
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(168,216,240,0.4);font-size:0.9rem;text-align:center;">
+        presiona jugar para empezar ▶
+      </div>
+    </div>
+    <div class="game-stats">
+      <div class="stat">❤️ puntos: <span id="score">0</span></div>
+      <div class="stat">⏱️ tiempo: <span id="timer">20</span>s</div>
+    </div>
+    <button class="btn" onclick="startGame()">▶ Jugar</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-card">
+    <h2>💌 ¿Cuánto sabes de nosotros?</h2>
+    <p class="desc">5 preguntas random cada vez — demuestra que me conoces 🐧</p>
+    <div class="quiz-bar-wrap"><div class="quiz-bar" id="quiz-bar"></div></div>
+    <div id="quiz-question">Presiona "Empezar" y demuestra que me conoces 💙</div>
+    <div class="quiz-options" id="quiz-opts"></div>
+    <div id="quiz-feedback"></div>
+    <div id="quiz-progress"></div>
+    <button class="btn" onclick="startQuiz()" id="quiz-btn" style="margin-top:16px">▶ Empezar</button>
+  </div>
+
+  <!-- TIENDA DE PREMIOS -->
+  <div class="shop-card">
+    <h2>🎁 Tienda de premios</h2>
+    <p class="desc">Canjea tus puntos del quiz por algo rico o especial 💙</p>
+    <div class="shop-points-display">
+      💙 Puntos disponibles: <span id="shop-points">0</span>
+    </div>
+    <div class="shop-grid">
+      <div class="shop-item" data-cost="8" data-name="Papas gajo 🍟">
+        <div class="shop-emoji">🍟</div>
+        <div class="shop-name">Papas gajo</div>
+        <div class="shop-cost">8 pts</div>
+        <button class="shop-btn" onclick="canjear(this,8,'Papas gajo 🍟')">Canjear</button>
+      </div>
+      <div class="shop-item" data-cost="10" data-name="Banderilla 🌮">
+        <div class="shop-emoji">🌮</div>
+        <div class="shop-name">Banderilla</div>
+        <div class="shop-cost">10 pts</div>
+        <button class="shop-btn" onclick="canjear(this,10,'Banderilla 🌮')">Canjear</button>
+      </div>
+      <div class="shop-item" data-cost="15" data-name="Boba 🧋">
+        <div class="shop-emoji">🧋</div>
+        <div class="shop-name">Boba</div>
+        <div class="shop-cost">15 pts</div>
+        <button class="shop-btn" onclick="canjear(this,15,'Boba 🧋')">Canjear</button>
+      </div>
+      <div class="shop-item shop-premium" data-cost="40" data-name="Ropa linda 👗">
+        <div class="shop-emoji">👗</div>
+        <div class="shop-name">Ropa linda</div>
+        <div class="shop-cost">40 pts</div>
+        <button class="shop-btn" onclick="canjear(this,40,'Ropa linda 👗')">Canjear</button>
+      </div>
+      <div class="shop-item shop-ultra" data-cost="60" data-name="Lo hormonal 🌸">
+        <div class="shop-emoji">🌸</div>
+        <div class="shop-name">Lo hormonal</div>
+        <div class="shop-cost">60 pts</div>
+        <button class="shop-btn" onclick="canjear(this,60,'Lo hormonal 🌸')">Canjear</button>
+      </div>
+    </div>
+    <div id="shop-msg"></div>
+  </div>
+
+  <div class="footer">hecho con 🐧 y muchísimo amor · Fer · 2026</div>
+</div>
+
+<!-- MUSIC BAR -->
+<div id="music-bar">
+  <span class="music-note" id="music-note">🎵</span>
+  <div class="song-info">
+    <span class="song-title">My Love</span>
+    <span class="song-sub">para Angy 💙</span>
+  </div>
+  <button id="play-btn" onclick="toggleMusic()">▶</button>
+</div>
+
+<script>
+/* ══ BIENVENIDA ══ */
+function enterPage() {
+  const music = document.getElementById('bg-music');
+  music.play().catch(()=>{});
+  document.getElementById('play-btn').textContent = '⏸';
+  const ws = document.getElementById('welcome-screen');
+  ws.classList.add('hide');
+  setTimeout(() => ws.style.display = 'none', 900);
+}
+
+/* ══ MÚSICA ══ */
+let playing = false;
+// Se activa desde bienvenida, pero también con el botón
+document.getElementById('bg-music').addEventListener('play', () => {
+  playing = true;
+  document.getElementById('play-btn').textContent = '⏸';
+  document.getElementById('music-note').style.animationPlayState = 'running';
+});
+document.getElementById('bg-music').addEventListener('pause', () => {
+  playing = false;
+  document.getElementById('play-btn').textContent = '▶';
+  document.getElementById('music-note').style.animationPlayState = 'paused';
+});
+
+function toggleMusic() {
+  const m = document.getElementById('bg-music');
+  if (m.paused) { m.play(); } else { m.pause(); }
+}
+
+/* ══ FONDO ══ */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const stars = Array.from({length:120}, () => ({
+  x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+  r:Math.random()*1.5+0.3, alpha:Math.random()*0.6+0.2
+}));
+const flakes = Array.from({length:70}, () => ({
+  x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+  r:Math.random()*2.5+0.8, speed:Math.random()*0.9+0.3,
+  drift:Math.random()*0.4-0.2, alpha:Math.random()*0.4+0.15
+}));
+let aT = 0;
+
+function drawAurora() {
+  aT += 0.004;
+  for (let i=0;i<3;i++) {
+    const h2 = canvas.height*0.55;
+    const grd = ctx.createLinearGradient(0,h2-60,0,h2+120);
+    const hue = 190+i*25+Math.sin(aT+i)*15;
+    grd.addColorStop(0,`hsla(${hue},80%,60%,0)`);
+    grd.addColorStop(0.4,`hsla(${hue},80%,55%,0.04)`);
+    grd.addColorStop(1,`hsla(${hue},80%,40%,0)`);
+    ctx.beginPath(); ctx.moveTo(0,h2);
+    for(let x=0;x<=canvas.width;x+=40) ctx.lineTo(x,h2+Math.sin(x*0.008+aT+i*2)*40);
+    ctx.lineTo(canvas.width,canvas.height); ctx.lineTo(0,canvas.height); ctx.closePath();
+    ctx.fillStyle=grd; ctx.fill();
+  }
+}
+
+(function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawAurora();
+  stars.forEach(s=>{
+    s.alpha+=(Math.random()-0.5)*0.018; s.alpha=Math.max(0.1,Math.min(0.9,s.alpha));
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(200,230,255,${s.alpha})`; ctx.fill();
+  });
+  flakes.forEach((f,i)=>{
+    ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(210,235,255,${f.alpha})`; ctx.fill();
+    f.y+=f.speed; f.x+=f.drift;
+    if(f.y>canvas.height+10){flakes[i].y=-10;flakes[i].x=Math.random()*canvas.width;}
+  });
+  requestAnimationFrame(animate);
+})();
+
+/* ══ POPUP ══ */
+function spawnFloat(emojis,x,y){
+  emojis.forEach((e,i)=>{
+    const el=document.createElement('div'); el.className='popup-float'; el.textContent=e;
+    el.style.left=(x+(Math.random()-0.5)*60)+'px'; el.style.top=(y+(Math.random()-0.5)*30)+'px';
+    el.style.animationDelay=(i*0.1)+'s'; document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1400);
+  });
+}
+
+/* ══ HEART REVEAL ══ */
+const revealWords=[
+  {icon:'🐧',word:'Eres'},{icon:'💙',word:'mi'},{icon:'❄️',word:'persona'},
+  {icon:'🌟',word:'favorita'},{icon:'🐧',word:'del'},{icon:'✨',word:'universo'},
+  {icon:'💙',word:'entero'},{icon:'🐧',word:'y'},{icon:'❄️',word:'te'},
+  {icon:'🌙',word:'quiero'},{icon:'💙',word:'un'},{icon:'🐧',word:'chingo'},
+  {icon:'❄️',word:'💙'},{icon:'🌟',word:'🐧'},{icon:'✨',word:'🫶'},
+];
+let revealCount=0;
+const grid=document.getElementById('heart-grid');
+const revealMsg=document.getElementById('reveal-msg');
+revealWords.forEach((item,i)=>{
+  const tile=document.createElement('div'); tile.className='heart-tile'; tile.textContent=item.icon;
+  tile.addEventListener('click',()=>{
+    if(tile.classList.contains('flipped'))return;
+    tile.classList.add('flipped'); tile.textContent=item.word; revealCount++;
+    const r=tile.getBoundingClientRect(); spawnFloat(['💙','❄️','🐧'],r.left+r.width/2,r.top);
+    const msgs=['','','','¡Sigue revelando! 🐧','','¡Ya casi! ❄️','','¡Casi! 💙','','','','¡Falta poquito! 🌟','','','¡Lo descubriste todo! 💙🐧❄️'];
+    revealMsg.textContent=msgs[revealCount]||'';
+  });
+  grid.appendChild(tile);
+});
+
+/* ══ JUEGO ══ */
+let score=0,gameActive=false,gameInterval,timerInterval,timeLeft=20;
+function startGame(){
+  score=0;timeLeft=20;gameActive=true;
+  document.getElementById('score').textContent=0;
+  document.getElementById('timer').textContent=20;
+  document.getElementById('game-area').innerHTML='';
+  clearInterval(gameInterval);clearInterval(timerInterval);
+  let speed=2800;
+  gameInterval=setInterval(()=>{if(!gameActive)return;speed=Math.max(1000,speed-60);spawnItem(speed);},600);
+  timerInterval=setInterval(()=>{timeLeft--;document.getElementById('timer').textContent=timeLeft;if(timeLeft<=0)endGame();},1000);
+}
+function endGame(){
+  gameActive=false;clearInterval(gameInterval);clearInterval(timerInterval);
+  const area=document.getElementById('game-area'); area.innerHTML='';
+  const msg=score>=20?`¡Wooow! ${score} pts 🏆 eres increíble 💙`:score>=10?`¡Muy bien! ${score} pts 🐧`:` ${score} pts 💙 ¡inténtalo de nuevo!`;
+  area.innerHTML=`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#a8d8f0;font-size:1.1rem;font-weight:800;padding:20px;line-height:1.6">${msg}</div>`;
+}
+function spawnItem(dur){
+  const area=document.getElementById('game-area');
+  const el=document.createElement('div'); el.className='falling-item';
+  const good=Math.random()>0.28;
+  el.textContent=good?['💙','❤️','🐧','❄️','✨'][Math.floor(Math.random()*5)]:'⛈️';
+  el.style.left=(Math.random()*(area.offsetWidth-50))+'px';
+  el.style.animationDuration=dur+'ms';
+  el.addEventListener('click',(e)=>{
+    if(!gameActive)return;
+    if(good){score++;document.getElementById('score').textContent=score;spawnFloat(['💙','✨'],e.clientX,e.clientY);}
+    else{score=Math.max(0,score-2);document.getElementById('score').textContent=score;}
+    el.remove();
+  });
+  area.appendChild(el); setTimeout(()=>el.remove(),dur+100);
+}
+
+/* ══ QUIZ ══ */
+// TIPOS: 'single' = una correcta | 'multi' = varias correctas (checkboxes) | 'chain' = pregunta encadenada
+const allQuestions = [
+
+  // ── SINGLE ──
+  { type:'single',
+    q:'¿Cuándo es nuestro aniversario? 🥰',
+    opts:['14 de febrero 💘','1 de noviembre 🍂','25 de diciembre 🎄','31 de octubre 🎃'],
+    ans:1, msg:'¡El 1 de noviembre! Una fecha muy especial 🍂💙' },
+
+  { type:'single',
+    q:'¿Cuánto extraña Fer a Angy?',
+    opts:['Un poquito 🤏','Bastante pero lo disimula 😌','infinitaeternamentemultiplicadamentecuadrigesimamuchoteextrañademasiadomillonesdeeternidades 🌌','Solo cuando se aburre 😅'],
+    ans:2, msg:'¡Exacto! No puede dejar de pensar en ti ni un momento 💙🐧' },
+
+  { type:'single',
+    q:'¿Cuál es el apodo que Fer MÁS ama decirte?',
+    opts:['Cuchurrumín 🐣','Mi sáfiro 💎','Tilina 🌸','Mi princesita 👑'],
+    ans:3, msg:'¡Mi princesita! Porque eso es exactamente lo que eres 👑💙' },
+
+  { type:'single',
+    q:'¿Cuál fue su primera salida juntos?',
+    opts:['Al cine 🎬','A cenar a un restaurant fancy 🍽️','Al Tres Centurias 🏛️','A una fiesta de amigos 🎉'],
+    ans:2, msg:'¡Al Tres Centurias! El inicio de todo 🏛️💙' },
+
+  { type:'single',
+    q:'¿Dónde fue su primer beso? 💋',
+    opts:['Saliendo del cine 🎬','En el carro en el Tres Centurias 🚗','Después de cenar, saliendo a caminar 🌙','Afuera de su casa 🏠'],
+    ans:3, msg:'¡Afuera de su casa! Ese momento tan especial 🏠💙' },
+
+  { type:'single',
+    q:'¿Qué es lo que más les gusta hacer juntos? 🍽️',
+    opts:['Ver películas 🎬','Salir a caminar 🌿','Comer 🍕','Ir de compras 🛍️'],
+    ans:2, msg:'¡Comer juntos! Y ya sabes lo que viene después... 🔥😏',
+    chain: {
+      q:'Hmm... ¿y qué pasa después de comer? 😏🔥',
+      opts:['Dormir la siesta 😴','Ver una serie 📺','Ser hornos 🔥😈','Salir a caminar 🌙'],
+      ans:2, msg:'¡Ser hornos! Jaja ya sabías 🔥💙😂'
+    }
+  },
+
+  { type:'single',
+    q:'¿Qué han planeado hacer juntos en el futuro? ✈️',
+    opts:['Cocinar juntos 👨‍🍳','Trabajar en el mismo lugar 💼','Viajar y conocer el mundo juntos 🌍','Abrir un negocio 🏪'],
+    ans:2, msg:'¡Viajar y conocer el mundo juntos! El plan más bonito 🌍💙' },
+
+  { type:'single',
+    q:'¿Cuál es la canción de ustedes? 🎵',
+    opts:['Pa quererte — Rels B 🎶','Until I Found You — Stephen Sanchez 🌹','Beso — Jósean Log 💙','Lover — Taylor Swift 🌈'],
+    ans:2, msg:'¡Beso de Jósean Log! La canción que los define 💙🎵' },
+
+  { type:'single',
+    q:'¿Cuál es la combinación perfecta para un date con Fer? 🥰',
+    opts:['Cine y palomitas 🎬','Una cena romántica a la luz de velas 🕯️','Un picnic en el parque 🌳','Comida, chismecito y momento horno 🍕💬🔥'],
+    ans:3, msg:'¡La fórmula perfecta! Comida + chisme + hornos = date ideal 🔥💙' },
+
+  { type:'single',
+    q:'¿Qué es lo que más te dice Fer? 💬',
+    opts:['Eres muy graciosa 😂','Mi niña linda 💙','Qué bonitos ojos tienes 👀','Ya quiero verte 🥺'],
+    ans:1, msg:'¡Mi niña linda! Porque eso eres, siempre 💙🐧' },
+
+  // ── MULTI: todas correctas ──
+  { type:'multi',
+    q:'¿Qué es lo que más le gusta ver de ti a Fer? 👀 (selecciona todo lo que creas)',
+    opts:['Tus ojos 👀','Tu sonrisa 😊','Tu carita 🥰','Tus manos 🤲','Tu personalidad ✨','Tus expresiones 😍','La forma en la que hablas 🗣️','Cuando estás expresando todo tu amor 💙','Cuando estás encima de él 🔥','Tus piernas 🦵','Tu toque 🤍','Tu olor 🌸','Tu cuello 🩷','Tu ser 🌟','Tu gran y escultural cuerpo 💃','Tu faceta tierna 🧸'],
+    allCorrect: true,
+    msg:'¡Pues obvio, yo amo TODO de ti! 💙🐧 No hay una sola parte que no me encante' },
+
+  // ── MULTI: varias correctas ──
+  { type:'multi',
+    q:'¿Con qué llora más Fer? 🥹 (selecciona las que creas correctas)',
+    opts:['Cuando le dices te quiero 💙','Cuando lo ves fijamente y le sonríes 😊','Cuando lo abrazas tan fuerte 🤗','Cuando lo haces sentir tan querido 🥰','Cuando le dices te extraño 💔','Cuando pierde en videojuegos 🎮','Cuando se le acaba el internet 📶','Cuando no hay tacos 🌮'],
+    correctIdxs:[0,1,2,3,4],
+    msg:'¡Exacto! Todo lo que haces con amor lo hace llorar de felicidad 🥹💙' },
+
+];
+
+let quizPool=[], qIdx=0, quizScore=0, totalPoints=0, activeQ=null, chainPending=false;
+// Cargar puntos guardados en localStorage si existen
+try { totalPoints = parseInt(localStorage.getItem('angy_points')||'0')||0; } catch(e){}
+
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+function startQuiz(){
+  // Seleccionar 5 preguntas random del banco (sin repetir las multi en la misma ronda idealmente)
+  const singles = allQuestions.filter(q=>q.type==='single');
+  const multis  = allQuestions.filter(q=>q.type==='multi');
+  const picked  = shuffle(singles).slice(0,4).concat(shuffle(multis).slice(0,1));
+  quizPool = shuffle(picked);
+  qIdx=0; quizScore=0; chainPending=false;
+  document.getElementById('quiz-btn').style.display='none';
+  document.getElementById('quiz-bar').style.width='0%';
+  showQ();
+}
+
+function showQ(){
+  document.getElementById('quiz-bar').style.width=(qIdx/quizPool.length*100)+'%';
+  if(qIdx>=quizPool.length){
+    quizEnd(); return;
+  }
+  activeQ = quizPool[qIdx];
+  renderQ(activeQ, false);
+}
+
+function renderQ(q, isChain){
+  document.getElementById('quiz-feedback').textContent='';
+  document.getElementById('quiz-progress').textContent= isChain ? '🔗 Pregunta extra!' : `${qIdx+1} / ${quizPool.length}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  const optsEl = document.getElementById('quiz-opts');
+  optsEl.innerHTML='';
+
+  if(q.type==='single' || isChain){
+    optsEl.style.gridTemplateColumns='1fr 1fr';
+    q.opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='quiz-opt' + (o.length > 40 ? ' long-opt' : '');
+      b.textContent=o;
+      b.onclick=()=>answerSingle(i,b,q,isChain);
+      optsEl.appendChild(b);
+    });
+  } else if(q.type==='multi'){
+    // checkboxes
+    optsEl.style.gridTemplateColumns='1fr';
+    q.opts.forEach((o,i)=>{
+      const label=document.createElement('label'); label.className='quiz-opt multi-label';
+      label.style.cssText='display:flex;align-items:center;gap:10px;cursor:pointer;text-align:left;';
+      const cb=document.createElement('input'); cb.type='checkbox'; cb.value=i;
+      cb.style.cssText='width:18px;height:18px;accent-color:#38b6ff;flex-shrink:0;';
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(o));
+      optsEl.appendChild(label);
+    });
+    // botón confirmar
+    const confirmBtn=document.createElement('button');
+    confirmBtn.className='btn'; confirmBtn.textContent='✅ Confirmar';
+    confirmBtn.style.cssText='margin-top:12px;padding:10px 24px;font-size:0.95rem;';
+    confirmBtn.onclick=()=>answerMulti(q);
+    optsEl.appendChild(confirmBtn);
+  }
+}
+
+function answerSingle(i, btn, q, isChain){
+  document.querySelectorAll('.quiz-opt').forEach(b=>b.onclick=null);
+  const correct = isChain ? (i===q.ans) : (i===q.ans);
+  if(correct){
+    btn.classList.add('correct');
+    document.getElementById('quiz-feedback').textContent='✅ '+q.msg;
+    quizScore++; totalPoints++;
+    updateShopPoints();
+    spawnFloat(['💙','🐧','❄️'],btn.getBoundingClientRect().left+30,btn.getBoundingClientRect().top);
+    // chain?
+    if(!isChain && q.chain){
+      chainPending=true;
+      setTimeout(()=>{ renderQ(q.chain, true); chainPending=false; },2000);
+      return;
+    }
+  } else {
+    btn.classList.add('wrong');
+    const allBtns=document.querySelectorAll('.quiz-opt');
+    if(allBtns[q.ans]) allBtns[q.ans].classList.add('correct');
+    document.getElementById('quiz-feedback').textContent='❌ Casi... '+q.msg;
+    if(!isChain && q.chain){
+      chainPending=true;
+      setTimeout(()=>{ renderQ(q.chain, true); chainPending=false; },2000);
+      return;
+    }
+  }
+  qIdx++;
+  setTimeout(showQ, 2200);
+}
+
+function answerMulti(q){
+  const checked=[...document.querySelectorAll('#quiz-opts input[type=checkbox]:checked')].map(c=>parseInt(c.value));
+  let correct=false;
+  if(q.allCorrect){
+    // Todas son correctas, solo hay que haber seleccionado al menos 1
+    correct = checked.length > 0;
+    // marcar todas de verde
+    document.querySelectorAll('#quiz-opts .multi-label').forEach(l=>l.style.color='#50dc78');
+  } else {
+    // verificar que eligió exactamente las correctas (o al menos todas las correctas)
+    const needed = new Set(q.correctIdxs);
+    const chosen = new Set(checked);
+    correct = q.correctIdxs.every(i=>chosen.has(i)) && checked.every(i=>needed.has(i));
+    document.querySelectorAll('#quiz-opts .multi-label').forEach((l,i)=>{
+      if(q.correctIdxs.includes(i)) l.style.color='#50dc78';
+      else if(checked.includes(i)) l.style.color='#f06464';
+    });
+  }
+  if(correct){
+    document.getElementById('quiz-feedback').textContent='✅ '+q.msg;
+    quizScore++; totalPoints+=2; // multi vale 2 puntos
+    updateShopPoints();
+    spawnFloat(['💙','🐧','🌟'],200,200);
+  } else {
+    document.getElementById('quiz-feedback').textContent='❌ Casi... '+q.msg;
+  }
+  // deshabilitar confirm
+  const cb=document.querySelector('#quiz-opts .btn'); if(cb) cb.disabled=true;
+  document.querySelectorAll('#quiz-opts input').forEach(i=>i.disabled=true);
+  qIdx++;
+  setTimeout(showQ,2500);
+}
+
+function quizEnd(){
+  const pct=Math.round(quizScore/quizPool.length*100);
+  const finale = pct===100 ? `¡Perfecto! 💙 ${quizScore}/${quizPool.length} — ¡lo sabes todo de nosotros! 🐧❄️`
+               : pct>=70  ? `¡${quizScore} de ${quizPool.length}! ¡Muy bien, mi amor! 💙`
+               :             `${quizScore} de ${quizPool.length}. ¡Inténtalo de nuevo! 🐧`;
+  document.getElementById('quiz-question').textContent=finale;
+  document.getElementById('quiz-opts').innerHTML='';
+  document.getElementById('quiz-feedback').innerHTML=`<span style="color:var(--gold);font-size:1.1rem;">+${quizScore} pts esta ronda 🌟</span><br><span style="font-size:0.85rem;opacity:0.7">Total acumulado: <b style="color:var(--ice)">${totalPoints} puntos</b> — ¡sigue jugando para canjear más! 💙</span>`;
+  document.getElementById('quiz-progress').textContent='';
+  document.getElementById('quiz-bar').style.width='100%';
+  const btn=document.getElementById('quiz-btn');
+  btn.textContent='🔄 Jugar de nuevo (+más puntos)'; btn.style.display=''; btn.onclick=startQuiz;
+  updateShopPoints();
+}
+
+/* ══ TIENDA ══ */
+function updateShopPoints(){
+  try { localStorage.setItem('angy_points', totalPoints); } catch(e){}
+  document.getElementById('shop-points').textContent=totalPoints;
+  // habilitar/deshabilitar botones
+  document.querySelectorAll('.shop-btn').forEach(btn=>{
+    const cost=parseInt(btn.closest('.shop-item').dataset.cost);
+    btn.disabled = totalPoints < cost;
+  });
+}
+
+function canjear(btn, cost, name){
+  if(totalPoints < cost){ return; }
+  totalPoints -= cost;
+  updateShopPoints();
+  spawnFloat(['🎁','💙','✨'],btn.getBoundingClientRect().left+20,btn.getBoundingClientRect().top);
+  const msgs = {
+    'Papas gajo 🍟': '¡Papas gajo canjeadas! Fer te las debe 🍟😋',
+    'Banderilla 🌮': '¡Banderilla canjeada! A cobrar cuando quieras 🌮💙',
+    'Boba 🧋': '¡Boba canjeada! La más rica, para ti 🧋💙',
+    'Ropa linda 👗': '¡Ropa linda canjeada! Fer va a pagar lo que elijas 👗✨💙',
+    'Lo hormonal 🌸': '🌸 Premio máximo canjeado... Fer ya sabe lo que viene 😏🔥💙',
+  };
+  document.getElementById('shop-msg').textContent = msgs[name] || `¡${name} canjeado! 💙`;
+  setTimeout(()=>document.getElementById('shop-msg').textContent='', 4000);
+}
+
+// Inicializar tienda deshabilitada
+updateShopPoints();
+</script>
+</body>
+</html>
